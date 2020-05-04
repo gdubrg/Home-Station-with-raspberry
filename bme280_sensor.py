@@ -1,24 +1,27 @@
 import bme280
 import smbus2
-import cv2
 from time import sleep
 from PyQt5 import QtCore
 import time
+from datetime import timedelta
+from datetime import datetime
 
 
 class ThreadBME280(QtCore.QThread):
 
-    s_temp_chart = QtCore.pyqtSignal(list, list)
-    s_pres_chart = QtCore.pyqtSignal(list, list)
-    s_humi_chart = QtCore.pyqtSignal(list, list)
+    signal_bme280 = QtCore.pyqtSignal()
 
-    def __init__(self, window, cursor, connection, reload_seconds, parent=None):
+    def __init__(self, window, cursor, connection, reload_seconds):
 
         QtCore.QThread.__init__(self)
-        self.window = window
+        # self.window = window
         self.cursor = cursor
         self.connection = connection
         self.reload_seconds = reload_seconds
+
+        self.ambient_temperature = None
+        self.humidity = None
+        self.pressure = None
 
     def __del__(self):
         self.wait()
@@ -35,22 +38,26 @@ class ThreadBME280(QtCore.QThread):
 
         while True:
             bme280_data = bme280.sample(bus, address)
-            humidity = bme280_data.humidity
-            pressure = bme280_data.pressure
-            ambient_temperature = bme280_data.temperature
+            self.humidity = bme280_data.humidity
+            self.pressure = bme280_data.pressure
+            self.ambient_temperature = bme280_data.temperature
 
-            print("H: {} P: {} T: {}".format(humidity, pressure, ambient_temperature))
+            # print("H: {} P: {} T: {}".format(humidity, pressure, ambient_temperature))
 
-            self.window.lcd_h.display("{:.1f}".format(humidity))
-            self.window.lcd_p.display(pressure)
-            self.window.lcd_t.display("{:.1f}".format(ambient_temperature))
+            # self.window.lcd_h.display("{:.1f}".format(self.humidity))
+            # self.window.lcd_p.display(self.pressure)
+            # self.window.lcd_t.display("{:.1f}".format(self.ambient_temperature))
 
-            date_now = time.strftime('%Y-%m-%d %H:%M:%S')
-            # self.cursor.execute("INSERT INTO BME_280 VALUES (%s, %s, %s, %s)", (ambient_temperature, pressure, humidity, date_now))
-            # self.connection.commit()
+            # date_now = time.strftime('%Y-%m-%d-%H-%M-%S')
+            # for i in range(3):
+            date_now = datetime.strftime(datetime.now(), '%Y-%m-%d-%H-%M-%S')
 
-            self.s_temp_chart.emit([1, 2, 3, 4, 5, 6, 7, 8, 9], [1, 5, 2, 8, 4, 9, 5, 4, 3])
-            self.s_pres_chart.emit([1, 2, 3], [1, 2, 3])
-            self.s_humi_chart.emit([1, 2, 3], [1, 2, 3])
+            try:
+                self.cursor.execute("INSERT INTO BME_280 VALUES (%s, %s, %s, %s)", (self.ambient_temperature, self.pressure, self.humidity, date_now))
+                self.connection.commit()
+            except Exception as e:
+                print("ERROR: problem in inserting values in database", e)
+
+            self.signal_bme280.emit()
 
             sleep(self.reload_seconds)

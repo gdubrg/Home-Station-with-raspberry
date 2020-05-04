@@ -1,0 +1,1 @@
+sleep 10 && cd /home/pi/Documents/home_station/ && python3 main.py
