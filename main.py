@@ -57,24 +57,27 @@ class MainWindow(QMainWindow):
         # database
         self.mariadb_connection_1 = mariadb.connect(user='homestation', password='hs', database='home_station')
         # self.mariadb_connection_2 = mariadb.connect(user='homestation', password='hs', database='home_station')
-        self.cursor_1 = self.mariadb_connection_1.cursor(buffered=False)
+        self.cursor_1 = self.mariadb_connection_1.cursor(buffered=True)
         self.cursor_2 = self.mariadb_connection_1.cursor(buffered=True)
 
+        l = [[], [], []]
+
         # threads
-        self.sampling_thread = ThreadBME280(self, self.cursor_1, self.mariadb_connection_1, reload_seconds)
-        self.graph_thread = ThreadGraphs(self, self.cursor_2, self.mariadb_connection_1, reload_seconds, reload_seconds_graphs)
+        self.sampling_thread = ThreadBME280(self, self.cursor_1, self.mariadb_connection_1, reload_seconds, l)
+        self.graph_thread = ThreadGraphs(self, self.cursor_2, self.mariadb_connection_1, reload_seconds, reload_seconds_graphs, l)
         self.datetime_thread = ThreadDateTime(self, reload_seconds)
-        self.weather_thread = ThreadWeatherForecast(self, city='Modena', reload_seconds=10800)  # 10800: 3 hours in seconds
+        self.weather_thread = ThreadWeatherForecast(self, city='Bagnacavallo', reload_seconds=10800)  # 10800: 3 hours in seconds
         self.arpae_thread = ThreadArpae(self, reload_seconds=3600)
         self.sender = SenderTelegram()
 
         # signals
         self.sampling_thread.signal_bme280.connect(self.update_temp_humi_pres)
         self.datetime_thread.signal_time.connect(self.update_time)
+        self.graph_thread.signal_minmax.connect(self.update_minmax)
         self.arpae_thread.signal_arpae.connect(self.update_arpae)
         self.weather_thread.signal_weather.connect(self.update_weather)
         self.weather_thread.signal_forecast.connect(self.update_forecast)
-        self.graph_thread.signal_minmax.connect(self.update_minmax)
+
 
         # starters
         self.sampling_thread.start()

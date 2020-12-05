@@ -12,7 +12,7 @@ class SenderTelegram(QtCore.QThread):
         self.bot = telepot.Bot(TOKEN)
 
         MessageLoop(self.bot, self.handle).run_as_thread()
-        # print('Listening ...')
+        print('Listening on Telegram...')
 
         # Keep the program running.
         # while 1:
@@ -22,15 +22,15 @@ class SenderTelegram(QtCore.QThread):
         content_type, chat_type, chat_id = telepot.glance(msg)
 
         if chat_id == 37221510:
-            if msg['text'] == 'temp':
+            if msg['text'] == 'temp' or msg['text'] == 'Temp':
                 self.bot.sendMessage(chat_id, 'Sending temperature graph...')
                 image = open('graphs/temp.png', 'rb')
                 self.bot.sendPhoto(chat_id, image)
-            if msg['text'] == 'humi':
+            if msg['text'] == 'humi' or msg['text'] == 'Humi':
                 self.bot.sendMessage(chat_id, 'Sending humidity graph...')
                 image = open('graphs/humi.png', 'rb')
                 self.bot.sendPhoto(chat_id, image)
-            if msg['text'] == 'pres':
+            if msg['text'] == 'pres' or msg['text'] == 'Pres':
                 self.bot.sendMessage(chat_id, 'Sending pressure graph...')
                 image = open('graphs/pres.png', 'rb')
                 self.bot.sendPhoto(chat_id, image)

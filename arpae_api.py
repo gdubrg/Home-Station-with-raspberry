@@ -12,6 +12,8 @@ class ThreadArpae(QtCore.QThread):
         # self.window = window
         self.reload_seconds = reload_seconds
 
+        self.url_arpae = "https://dati.arpae.it/api/action/datastore_search_sql"
+
         self.pm10_value = None
         self.pm25_value = None
         self.no2_value = None
@@ -29,7 +31,7 @@ class ThreadArpae(QtCore.QThread):
             pm10_value, pm25_value, no2_value = 0, 0, 0
 
             try:
-                pm10 = requests.get('https://arpae.datamb.it/api/action/datastore_search_sql?sql='
+                pm10 = requests.get(self.url_arpae + '?sql='
                                           'SELECT * from "a1c46cfe-46e5-44b4-9231-7d9260a38e68" '
                                           'WHERE station_id=4000022 '
                                           'AND variable_id=5'
@@ -41,7 +43,7 @@ class ThreadArpae(QtCore.QThread):
                 self.pm10_value = pm10['result']['records'][0]['value']
 
             try:
-                pm25 = requests.get('https://arpae.datamb.it/api/action/datastore_search_sql?sql='
+                pm25 = requests.get(self.url_arpae + '?sql='
                                     'SELECT * from "a1c46cfe-46e5-44b4-9231-7d9260a38e68" '
                                     'WHERE station_id=4000022 '
                                     'AND variable_id=111'
@@ -53,7 +55,7 @@ class ThreadArpae(QtCore.QThread):
                 self.pm25_value = pm25['result']['records'][0]['value']
 
             try:
-                no2 = requests.get('https://arpae.datamb.it/api/action/datastore_search_sql?sql='
+                no2 = requests.get(self.url_arpae + '?sql='
                                     'SELECT * from "a1c46cfe-46e5-44b4-9231-7d9260a38e68" '
                                     'WHERE station_id=4000022 '
                                     'AND variable_id=8'
