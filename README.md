@@ -14,7 +14,7 @@ A easy-to-read Graphical User Interface has been developed using the Qt Librarie
 This GUI is displayed in a touch screen monitor connected to the Raspberry board and it is the following:
 
 <p align="center">
-  <img src="/images/vers4_1.PNG" />
+  <img src="/images/vers4_1.PNG" width="85%" />
 </p>
 
 The GUI is divided into 3 different columns:
