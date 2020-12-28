@@ -22,7 +22,11 @@ The GUI is divided into 3 different columns:
 are reported. These data are collected by the BME280 sensor. Min and max values are also reported, 
 a button 'graphs' allows to check the temporal summary of collected data.
 
-![alt-text-1](/images/temp.PNG) ![alt-text-1](/images/humi.PNG) ![alt-text-1](/images/press.PNG)
+<p float="left">
+  <img src="/images/temp.PNG" width="100" />
+  <img src="/images/humi.PNG" width="100" /> 
+  <img src="/images/press.PNG" width="100" />
+</p>
 
 2. **Air Quality**: values about the NO2 (*Nitrogen dioxide*), PM2.5 and PM 10 are reported. Data are collected
 through the Arpae (*Agenzia regionale prevenzione, ambiente ed energia dell'Emilia-Romagna*) website.
