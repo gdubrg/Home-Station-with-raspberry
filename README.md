@@ -22,10 +22,10 @@ The GUI is divided into 3 different columns:
 are reported. These data are collected by the BME280 sensor. Min and max values are also reported, 
 a button 'graphs' allows to check the temporal summary of collected data.
 
-<p float="center">
-  <img src="/images/temp.PNG" width="33%" />
-  <img src="/images/humi.PNG" width="33%" /> 
-  <img src="/images/press.PNG" width="33%" />
+<p align="center">
+  <img src="/images/temp.PNG" width="32%" />
+  <img src="/images/humi.PNG" width="32%" /> 
+  <img src="/images/press.PNG" width="32%" />
 </p>
 
 2. **Air Quality**: values about the NO2 (*Nitrogen dioxide*), PM2.5 and PM 10 are reported. Data are collected
