@@ -7,10 +7,11 @@ class ThreadArpae(QtCore.QThread):
 
     signal_arpae = QtCore.pyqtSignal()
 
-    def __init__(self, window, reload_seconds):
+    def __init__(self, window, config):
         QtCore.QThread.__init__(self)
-        # self.window = window
-        self.reload_seconds = reload_seconds
+
+        self.reload_seconds = config['RELOAD SECONDS']['ARPAE']
+        self.station_id = str(config['ARPAE']['STATION ID'])
 
         self.url_arpae = "https://dati.arpae.it/api/action/datastore_search_sql"
 
@@ -33,7 +34,7 @@ class ThreadArpae(QtCore.QThread):
             try:
                 pm10 = requests.get(self.url_arpae + '?sql='
                                           'SELECT * from "a1c46cfe-46e5-44b4-9231-7d9260a38e68" '
-                                          'WHERE station_id=4000022 '
+                                          'WHERE station_id=' + self.station_id + ' '
                                           'AND variable_id=5'
                                           'ORDER BY reftime DESC LIMIT 1').json()
             except requests.exceptions.RequestException as e:
@@ -45,7 +46,7 @@ class ThreadArpae(QtCore.QThread):
             try:
                 pm25 = requests.get(self.url_arpae + '?sql='
                                     'SELECT * from "a1c46cfe-46e5-44b4-9231-7d9260a38e68" '
-                                    'WHERE station_id=4000022 '
+                                    'WHERE station_id=' + self.station_id + ' '
                                     'AND variable_id=111'
                                     'ORDER BY reftime DESC LIMIT 1').json()
             except requests.exceptions.RequestException as e:
@@ -57,7 +58,7 @@ class ThreadArpae(QtCore.QThread):
             try:
                 no2 = requests.get(self.url_arpae + '?sql='
                                     'SELECT * from "a1c46cfe-46e5-44b4-9231-7d9260a38e68" '
-                                    'WHERE station_id=4000022 '
+                                    'WHERE station_id=' + self.station_id + ' '
                                     'AND variable_id=8'
                                     'ORDER BY reftime DESC LIMIT 1').json()
             except requests.exceptions.RequestException as e:
@@ -68,45 +69,6 @@ class ThreadArpae(QtCore.QThread):
 
             # wait for results
             sleep(3)
-
-            # if no2_value < 100:
-            #     self.window.label_color_1.setStyleSheet("QLabel { background-color: green }")
-            # if 101 < no2_value < 199:
-            #     self.window.label_color_1.setStyleSheet("QLabel { background-color: yellow }")
-            # if 200 < no2_value < 299:
-            #     self.window.label_color_1.setStyleSheet("QLabel { background-color: orange }")
-            # if 300 < no2_value < 399:
-            #     self.window.label_color_1.setStyleSheet("QLabel { background-color: red }")
-            # if no2_value > 400:
-            #     self.window.label_color_1.setStyleSheet("QLabel { background-color: purple }")
-            #
-            # self.window.lcd_pm1.display(no2_value)
-            #
-            # if pm25_value < 20:
-            #     self.window.label_color_2.setStyleSheet("QLabel { background-color: green }")
-            # if 20 < pm25_value < 39:
-            #     self.window.label_color_2.setStyleSheet("QLabel { background-color: yellow }")
-            # if 40 < pm25_value < 59:
-            #     self.window.label_color_2.setStyleSheet("QLabel { background-color: orange }")
-            # if 60 < pm25_value < 79:
-            #     self.window.label_color_2.setStyleSheet("QLabel { background-color: red }")
-            # if pm25_value > 80:
-            #     self.window.label_color_2.setStyleSheet("QLabel { background-color: purple }")
-            #
-            # self.window.lcd_pm25.display(pm25_value)
-            #
-            # if pm10_value < 25:
-            #     self.window.label_color_3.setStyleSheet("QLabel { background-color: green }")
-            # if 26 < pm10_value < 50:
-            #     self.window.label_color_3.setStyleSheet("QLabel { background-color: yellow }")
-            # if 51 < pm10_value < 75:
-            #     self.window.label_color_3.setStyleSheet("QLabel { background-color: orange }")
-            # if 76 < pm10_value < 100:
-            #     self.window.label_color_3.setStyleSheet("QLabel { background-color: red }")
-            # if pm10_value > 100:
-            #     self.window.label_color_3.setStyleSheet("QLabel { background-color: purple }")
-            #
-            # self.window.lcd_pm10.display(pm10_value)
 
             self.signal_arpae.emit()
 

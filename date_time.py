@@ -8,10 +8,8 @@ class ThreadDateTime(QtCore.QThread):
 
     signal_time = QtCore.pyqtSignal()
 
-    def __init__(self, window, reload_seconds):
+    def __init__(self, window):
         QtCore.QThread.__init__(self)
-        # self.window = window
-        self.reload_seconds = reload_seconds
 
         self.date = None
         self.hour = None
@@ -27,9 +25,6 @@ class ThreadDateTime(QtCore.QThread):
             t = time.time()
             self.date = datetime.now().strftime('%A %d %B %Y')
             self.hour = datetime.today().strftime('%H:%M:%S')
-
-            # self.window.data.setText(date)
-            # self.window.ora.setText(hour)
 
             self.signal_time.emit()
             sleep(1 - (time.time()-t))

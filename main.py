@@ -9,7 +9,7 @@ from weather_api import ThreadWeatherForecast
 from arpae_api import ThreadArpae
 from graphs import ThreadGraphs
 from telegram import SenderTelegram
-import mysql.connector as mariadb
+import yaml
 
 
 class SecondWindow(QDialog):
@@ -50,52 +50,48 @@ class MainWindow(QMainWindow):
 
         self.setGeometry(geometry)
 
-        # settings ToDO: create file settings
-        reload_seconds = 2#60
-        reload_seconds_graphs = 1#300
+        # settings
+        print("Loading config file: {}".format('settings'))
+        with open('settings', 'rt') as fd:
+            config = yaml.load(fd, Loader=yaml.SafeLoader)
 
-        # database
-        self.mariadb_connection_1 = mariadb.connect(user='homestation', password='hs', database='home_station')
-        # self.mariadb_connection_2 = mariadb.connect(user='homestation', password='hs', database='home_station')
-        self.cursor_1 = self.mariadb_connection_1.cursor(buffered=True)
-        self.cursor_2 = self.mariadb_connection_1.cursor(buffered=True)
-
-        l = [[], [], []]
+        # data collector
+        l = [[], [], [], []]
 
         # threads
-        self.sampling_thread = ThreadBME280(self, self.cursor_1, self.mariadb_connection_1, reload_seconds, l)
-        self.graph_thread = ThreadGraphs(self, self.cursor_2, self.mariadb_connection_1, reload_seconds, reload_seconds_graphs, l)
-        self.datetime_thread = ThreadDateTime(self, reload_seconds)
-        self.weather_thread = ThreadWeatherForecast(self, city='Bagnacavallo', reload_seconds=10800)  # 10800: 3 hours in seconds
-        self.arpae_thread = ThreadArpae(self, reload_seconds=3600)
-        self.sender = SenderTelegram()
+        self.sampling_thread = ThreadBME280(self, config, l)
+        self.graph_thread = ThreadGraphs(self, config, l)
+        self.datetime_thread = ThreadDateTime(self)
+        self.weather_thread = ThreadWeatherForecast(self, config)
+        self.arpae_thread = ThreadArpae(self, config)
 
         # signals
         self.sampling_thread.signal_bme280.connect(self.update_temp_humi_pres)
         self.datetime_thread.signal_time.connect(self.update_time)
-        self.graph_thread.signal_minmax.connect(self.update_minmax)
+        self.sampling_thread.signal_minmax.connect(self.update_minmax)
         self.arpae_thread.signal_arpae.connect(self.update_arpae)
         self.weather_thread.signal_weather.connect(self.update_weather)
         self.weather_thread.signal_forecast.connect(self.update_forecast)
 
-
         # starters
-        self.sampling_thread.start()
+        if config['MODULES']['BME280']:
+            self.sampling_thread.start()
         self.graph_thread.start()
         self.datetime_thread.start()
-        self.weather_thread.start()
-        self.arpae_thread.start()
+        if config['MODULES']['OPENWEATHER']:
+            self.weather_thread.start()
+        if config['MODULES']['ARPAE']:
+            self.arpae_thread.start()
+        if config['MODULES']['TELEGRAM']:
+            self.sender = SenderTelegram(config)
 
         # buttons
-        # self.button_start.clicked.connect(self.start_sampling)
         self.graph_temp_button.clicked.connect(lambda: self.on_pushButton_clicked('temp'))
         self.graph_humi_button.clicked.connect(lambda: self.on_pushButton_clicked('humi'))
         self.graph_press_button.clicked.connect(lambda: self.on_pushButton_clicked('press'))
 
+        # dialog windows
         self.dialog = SecondWindow(self)
-
-        # ToDo decidere come startare i thread
-        # start threads
 
     def on_pushButton_clicked(self, type):
         self.dialog.set_type(type)
@@ -199,31 +195,25 @@ class MainWindow(QMainWindow):
         self.forecast_4.show()
 
     def update_minmax(self):
-        if self.graph_thread.temp_min is not None:
-            self.lcd_min_temp.display(self.graph_thread.temp_min)
+        if self.sampling_thread.temp_min is not None:
+            self.lcd_min_temp.display(self.sampling_thread.temp_min)
 
-        if self.graph_thread.temp_max is not None:
-            self.lcd_max_temp.display(self.graph_thread.temp_max)
+        if self.sampling_thread.temp_max is not None:
+            self.lcd_max_temp.display(self.sampling_thread.temp_max)
 
-        if self.graph_thread.humi_min is not None:
-            self.lcd_min_humi.display(self.graph_thread.humi_min)
+        if self.sampling_thread.humi_min is not None:
+            self.lcd_min_humi.display(self.sampling_thread.humi_min)
 
-        if self.graph_thread.humi_max is not None:
-            self.lcd_max_humi.display(self.graph_thread.humi_max)
+        if self.sampling_thread.humi_max is not None:
+            self.lcd_max_humi.display(self.sampling_thread.humi_max)
 
-        if self.graph_thread.pixmap_pres is not None:
+        if self.sampling_thread.pixmap_pres is not None:
             self.arrow_press.setScaledContents(True)
-            self.arrow_press.setPixmap(self.graph_thread.pixmap_pres)
+            self.arrow_press.setPixmap(self.sampling_thread.pixmap_pres)
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-
-    # os.chdir("/home/pi/Documents/home_station/")
-
     main_window = MainWindow()
-    # main_window.showFullScreen()
-    # main_window.showMaximized()
     main_window.show()
-
     sys.exit(app.exec_())

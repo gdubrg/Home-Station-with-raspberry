@@ -6,17 +6,17 @@ from PyQt5 import QtCore
 
 class SenderTelegram(QtCore.QThread):
 
-    def __init__(self):
+    def __init__(self, config):
         QtCore.QThread.__init__(self)
-        TOKEN = '900451039:AAH9ieek4ZfldhHbe9OWM9ubcFjfnqlCH90'
+        TOKEN = config['TELEGRAM']['TOKEN']
         self.bot = telepot.Bot(TOKEN)
 
-        MessageLoop(self.bot, self.handle).run_as_thread()
-        print('Listening on Telegram...')
+        try:
+            MessageLoop(self.bot, self.handle).run_as_thread()
+        except Exception as e:
+            print("Error in plotting values: ", e)
 
-        # Keep the program running.
-        # while 1:
-        #     time.sleep(10)
+        print('Listening on Telegram...')
 
     def handle(self, msg):
         content_type, chat_type, chat_id = telepot.glance(msg)

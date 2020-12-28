@@ -8,11 +8,13 @@ class ThreadWeatherForecast(QtCore.QThread):
     signal_weather = QtCore.pyqtSignal()
     signal_forecast = QtCore.pyqtSignal()
 
-    def __init__(self, window, city, reload_seconds):
+    def __init__(self, window, config):
         QtCore.QThread.__init__(self)
         self.window = window
-        self.city = city
-        self.reload_seconds = reload_seconds
+
+        self.city = config['WEATHER']['CITY']
+        self.reload_seconds = config['RELOAD SECONDS']['WEATHER']
+        self.token = config['WEATHER']['TOKEN']
 
         self.weather_data = None
 
@@ -39,7 +41,6 @@ class ThreadWeatherForecast(QtCore.QThread):
 
     def get_current_weather(self):
         while True:
-            # self.window.label_city.setText(self.city)
             self.do_request()
             if self.weather_data is not None:
                 self.get_today_weather()
@@ -49,7 +50,7 @@ class ThreadWeatherForecast(QtCore.QThread):
     def do_request(self):
         url = "https://api.openweathermap.org/data/2.5/forecast?"
         city = "q=" + self.city
-        token = "appid=6de6d5f7dc205d00ce676ee7a2f2274a"
+        token = self.token
         try:
             self.weather_data = requests.get(url + city + "&" + token).json()
         except requests.exceptions.RequestException as e:
@@ -62,16 +63,9 @@ class ThreadWeatherForecast(QtCore.QThread):
         self.humidity = self.weather_data['list'][0]['main']['humidity']
         self.temp_cur = self.weather_data['list'][0]['main']['temp'] - 273.15
 
-        # self.window.lcd_w_min.display("{:.1f}".format(temp_min))
-        # self.window.lcd_w_max.display("{:.1f}".format(temp_max))
-        # self.window.lcd_w_hum.display("{:.1f}".format(humidity))
-        # self.window.lcd_w_tem.display("{:.1f}".format(temp))
-
         weather_icon = self.weather_data['list'][0]['weather'][0]['icon']
         icon = requests.get('http://openweathermap.org/img/w/{}.png'.format(weather_icon))
-        # self.pixmap_cur_weather = QtGui.QPixmap()
         self.pixmap_cur_weather.loadFromData(icon._content)
-        # self.window.label_cur_weather.setPixmap(pixmap)
 
         self.signal_weather.emit()
 
@@ -93,41 +87,36 @@ class ThreadWeatherForecast(QtCore.QThread):
         self.date_3, _ = self.weather_data['list'][first_day_offset + 4 + 16]['dt_txt'].split(' ')
         self.date_4, _ = self.weather_data['list'][first_day_offset + 4 + 24]['dt_txt'].split(' ')
 
+        tmp = self.date_1.split('-')
+        self.date_1 = tmp[2] + ' ' + tmp[1] + ' ' + tmp[0]
+
+        tmp = self.date_2.split('-')
+        self.date_2 = tmp[2] + ' ' + tmp[1] + ' ' + tmp[0]
+
+        tmp = self.date_3.split('-')
+        self.date_3 = tmp[2] + ' ' + tmp[1] + ' ' + tmp[0]
+
+        tmp = self.date_4.split('-')
+        self.date_4 = tmp[2] + ' ' + tmp[1] + ' ' + tmp[0]
+
         icon_name = weather_1['icon']
         icon = requests.get('http://openweathermap.org/img/w/{}.png'.format(icon_name))
-        # pixmap = QtGui.QPixmap()
 
         self.pixmap_day_1.loadFromData(icon._content)
 
-        # self.window.forecast_1.setPixmap(pixmap)
-        # self.window.label_day_forecast_1.setText(date_1)
-
         icon_name = weather_2['icon']
         icon = requests.get('http://openweathermap.org/img/w/{}.png'.format(icon_name))
-        # pixmap = QtGui.QPixmap()
 
         self.pixmap_day_2.loadFromData(icon._content)
-        # self.window.forecast_2.setPixmap(pixmap)
-        # self.window.label_day_forecast_2.setText(date_2)
 
         icon_name = weather_3['icon']
         icon = requests.get('http://openweathermap.org/img/w/{}.png'.format(icon_name))
-        # pixmap = QtGui.QPixmap()
         self.pixmap_day_3.loadFromData(icon._content)
-        # self.window.forecast_3.setPixmap(pixmap)
-        # self.window.label_day_forecast_3.setText(date_3)
+
 
         icon_name = weather_4['icon']
         icon = requests.get('http://openweathermap.org/img/w/{}.png'.format(icon_name))
-        # pixmap = QtGui.QPixmap()
         self.pixmap_day_4.loadFromData(icon._content)
-        # self.window.forecast_4.setPixmap(pixmap)
-        # self.window.label_day_forecast_4.setText(date_4)
-
-        # self.window.forecast_1.show()
-        # self.window.forecast_2.show()
-        # self.window.forecast_3.show()
-        # self.window.forecast_4.show()
 
         self.signal_forecast.emit()
 
