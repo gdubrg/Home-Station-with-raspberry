@@ -84,7 +84,8 @@ If you have python installed in a virtual environment, launch the script accordi
 You can use the file `launcher.sh` to automatically launch the script every time you turn on the *Raspberry Pi* board.
 There are several ways to do that.
 I have used this solution:
-1. Navigate into the `~/.config/autostart` directory, then create a new `*.desktop` file with the 
+1. Navigate into the `~/.config/autostart` directory
+2. Create a new `*.desktop` file with the 
 following lines:
 ```
 [Desktop Entry]
