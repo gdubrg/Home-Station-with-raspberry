@@ -74,16 +74,32 @@ class MainWindow(QMainWindow):
         self.weather_thread.signal_forecast.connect(self.update_forecast)
 
         # starters
-        if config['MODULES']['BME280']:
-            self.sampling_thread.start()
-        self.graph_thread.start()
         self.datetime_thread.start()
+
+        if config['MODULES']['BME280']:
+            print("Module BME280: ON")
+            self.sampling_thread.start()
+            self.graph_thread.start()
+        else:
+            print("Module BME280: OFF")
+
         if config['MODULES']['OPENWEATHER']:
             self.weather_thread.start()
+            print("Module Weather: ON")
+        else:
+            print("Module Weather: OFF")
+
         if config['MODULES']['ARPAE']:
             self.arpae_thread.start()
+            print("Module Arpae: ON")
+        else:
+            print("Module Arpae: OFF")
+
         if config['MODULES']['TELEGRAM']:
             self.sender = SenderTelegram(config)
+            print("Module Telegram: ON")
+        else:
+            print("Module Telegram: OFF")
 
         # buttons
         self.graph_temp_button.clicked.connect(lambda: self.on_pushButton_clicked('temp'))

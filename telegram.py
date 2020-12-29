@@ -10,6 +10,7 @@ class SenderTelegram(QtCore.QThread):
         QtCore.QThread.__init__(self)
         TOKEN = config['TELEGRAM']['TOKEN']
         self.bot = telepot.Bot(TOKEN)
+        self.chat_id = config['TELEGRAM']['CHAT ID']
 
         try:
             MessageLoop(self.bot, self.handle).run_as_thread()
@@ -21,7 +22,7 @@ class SenderTelegram(QtCore.QThread):
     def handle(self, msg):
         content_type, chat_type, chat_id = telepot.glance(msg)
 
-        if chat_id == 37221510:
+        if chat_id == self.chat_id:
             if msg['text'] == 'temp' or msg['text'] == 'Temp':
                 self.bot.sendMessage(chat_id, 'Sending temperature graph...')
                 image = open('graphs/temp.png', 'rb')

@@ -100,23 +100,32 @@ class ThreadWeatherForecast(QtCore.QThread):
         self.date_4 = tmp[2] + ' ' + tmp[1] + ' ' + tmp[0]
 
         icon_name = weather_1['icon']
-        icon = requests.get('http://openweathermap.org/img/w/{}.png'.format(icon_name))
-
-        self.pixmap_day_1.loadFromData(icon._content)
+        try:
+            icon = requests.get('http://openweathermap.org/img/w/{}.png'.format(icon_name))
+            self.pixmap_day_1.loadFromData(icon._content)
+        except requests.exceptions.RequestException as e:
+            print("ERROR: connection to Open Weather API not working. ", e)
 
         icon_name = weather_2['icon']
-        icon = requests.get('http://openweathermap.org/img/w/{}.png'.format(icon_name))
-
-        self.pixmap_day_2.loadFromData(icon._content)
+        try:
+            icon = requests.get('http://openweathermap.org/img/w/{}.png'.format(icon_name))
+            self.pixmap_day_2.loadFromData(icon._content)
+        except requests.exceptions.RequestException as e:
+            print("ERROR: connection to Open Weather API not working. ", e)
 
         icon_name = weather_3['icon']
-        icon = requests.get('http://openweathermap.org/img/w/{}.png'.format(icon_name))
-        self.pixmap_day_3.loadFromData(icon._content)
-
+        try:
+            icon = requests.get('http://openweathermap.org/img/w/{}.png'.format(icon_name))
+            self.pixmap_day_3.loadFromData(icon._content)
+        except requests.exceptions.RequestException as e:
+            print("ERROR: connection to Open Weather API not working. ", e)
 
         icon_name = weather_4['icon']
-        icon = requests.get('http://openweathermap.org/img/w/{}.png'.format(icon_name))
-        self.pixmap_day_4.loadFromData(icon._content)
+        try:
+            icon = requests.get('http://openweathermap.org/img/w/{}.png'.format(icon_name))
+            self.pixmap_day_4.loadFromData(icon._content)
+        except requests.exceptions.RequestException as e:
+            print("ERROR: connection to Open Weather API not working. ", e)
 
         self.signal_forecast.emit()
 
