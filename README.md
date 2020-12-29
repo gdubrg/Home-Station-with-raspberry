@@ -31,7 +31,8 @@ Min and max values are also reported, a button 'graphs' allows to check the temp
 
 2. **Air Quality**: values about the NO2 (*Nitrogen dioxide*), PM (*Particulate Matter*) 2.5 and 10 are reported. 
 Data are collected through the Arpae (*Agenzia regionale prevenzione, ambiente ed energia dell'Emilia-Romagna*) website, 
-and then are valid only for the aforementioned italian region.
+and then are valid only for the aforementioned italian region. The colored rectangle on the side of each value indicates
+the level of quality (green: *ok*, yellow: *acceptable*, orange: *medium*, red: *bad*, purple: *harmful*)
 3. **Weather and Forecast**: the current weather (in terms of temperature, its min and max values and 
 humidity) and weather forecast about the next 4 days are reported. These data are collected through 
 the *OpenWeather API* (free version).
@@ -48,7 +49,7 @@ the graphs about the current temperature, humidity and pressure, just sending a 
 texts: 'temp', 'humi' or 'pres'.
 
 <p align="center">
-  <img src="/images/telebot.PNG"/>
+  <img src="/images/telebot.PNG" />
 </p>
 
 ## How To
@@ -79,6 +80,20 @@ account). To remote control the app, you need to activate a Telegram bot.
 ### Launch the script 
 Once cloned this repository, open a terminal in the project folder and type: `python3 main.py`.
 If you have python installed in a virtual environment, launch the script accordingly.
+
+You can use the file `launcher.sh` to automatically launch the script every time you turn on the *Raspberry Pi* board.
+There are several ways to do that.
+I have used this solution:
+1. Navigate into the `~/.config/autostart` directory, then create a new `*.desktop` file with the 
+following lines:
+```
+[Desktop Entry]
+Type=Application
+Terminal=true
+Name=home_station
+Exec=<absolute_path_to_your_script>/launcher.sh
+```
+Note that I have added a sleep function (10 seconds) to wait the WiFi card turns on.
 
 ### Settings
 From the `settings` file you can change the following items:
@@ -115,5 +130,18 @@ Despite this, this project can be an interesting starting point to develop your 
 Then, technical details are provided.
 
 ### Code Structure
+The entry point of the code is the file `main-py`.
+The GUI is developed using the *Qt Libraries*.
 
 ### Execution
+Several threads are started and run in parallel to collect data from the sensor, the websites and so on.
+Despite this, the CPU usage is low (only 3%) on the quad-core *Cortex-A72 (ARM v8) 64-bit SoC @1.5GHz* of the Raspberry Pi 4.
+Also the RAM usage is low, since less than 300MB are required. 
+
+### Issues
+* Telegram bot: I have noticed that the Telegram bot is not completely reliable, since the method `MessageLoop` sometimes gives 
+timeout errors that cannot be handled by the `try-except` python operations.
+Then, if you want an high reliability of the system, please deactivate this module.
+* Database: you can easily note that no databases are included in the project. The use of threads and databases on Raspberry is not
+so reliable (many random errors with database cursors), then I implemented the project without the use of database. 
+After all, this is just a monitoring station and not a complete weather station to collect data during a long time interval. 
