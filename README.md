@@ -48,7 +48,7 @@ the graphs about the current temperature, humidity and pressure, just sending a 
 texts: 'temp', 'humi' or 'pres'.
 
 <p align="center">
-  <img src="/images/telebot.PNG" width="85%" />
+  <img src="/images/telebot.PNG"/>
 </p>
 
 ## How To
