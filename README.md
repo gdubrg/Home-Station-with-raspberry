@@ -2,7 +2,7 @@
 
 ## Project
 This is a **Home Monitoring Station** based on the *Raspberry Pi* 
-board designed to collect and display the following values:
+board designed to collect and display the following values on a portable screen:
 * **Temperature** (C°)
 * **Humidity** (%)
 * **Pressure** (hPa)
@@ -11,7 +11,7 @@ board designed to collect and display the following values:
 * **Weather Forecast** (4 days)
 
 ### Graphical User Interface
-The user interface is designed to be displayed in a 5'' touch screen monitor connected to the 
+A graphical user interface is used to clearly display all values and it is designed to be displayed in touch screen monitor connected to the 
 *Raspberry* board. An example of the interface is the following:
 
 <p align="center">
@@ -20,8 +20,8 @@ The user interface is designed to be displayed in a 5'' touch screen monitor con
 
 As shown, the GUI is divided into 3 different columns:
 1. **Environment Data**: in the first column on the left, the current temperature, humidity and pressure 
-are reported. These data are collected by a real sensor (the *BME280* or equivalent) directly connected to the board. 
-Min and max values are also reported, a button 'graphs' allows to check the temporal summary of collected data:
+are reported. These data are collected by a real sensor (the [*BME280*](https://www.bosch-sensortec.com/products/environmental-sensors/humidity-sensors-bme280/) produced by the *Bosch* company or equivalent) directly connected to the board. 
+Min and max values are also reported and buttons called 'graphs' allow to check the temporal summary of collected data:
 
 <p align="center">
   <img src="/images/temp.PNG" width="32%" />
@@ -31,8 +31,8 @@ Min and max values are also reported, a button 'graphs' allows to check the temp
 
 2. **Air Quality**: values about the NO2 (*Nitrogen dioxide*), PM (*Particulate Matter*) 2.5 and 10 are reported. 
 Data are collected through the Arpae (*Agenzia regionale prevenzione, ambiente ed energia dell'Emilia-Romagna*) website, 
-and then are valid only for the aforementioned italian region. The colored rectangle on the side of each value indicates
-the level of quality (green: *ok*, yellow: *acceptable*, orange: *medium*, red: *bad*, purple: *harmful*)
+and then are valid only for the aforementioned italian region. The colored rectangle on the left side of each value indicates
+the level of air quality (green: *ok*, yellow: *acceptable*, orange: *medium*, red: *bad*, purple: *harmful*)
 3. **Weather and Forecast**: the current weather (in terms of temperature, its min and max values and 
 humidity) and weather forecast about the next 4 days are reported. These data are collected through 
 the *OpenWeather API* (free version).
@@ -40,11 +40,10 @@ Since this service is global, weather and forecast can be used worldwide.
 
 On the top of the GUI, the current date and the current time are reported.
 
-This GUI is designed and optimized for a 5'' 800x480 touch screen (further details are reported in the 
-(Hardware Requirements)[###-hardware-requirements] section).
+This GUI is designed and optimized for a 5'' 800x480 touch screen (further details are reported in the *Hardware Requirements* section).
 
 ### Remote Visualization
-Thanks to the [Telegram](https://play.google.com/store/apps/details?id=org.telegram.messenger&hl=it&gl=US) app, you can get
+Thanks to the [Telegram](https://play.google.com/store/apps/details?id=org.telegram.messenger&hl=it&gl=US) app, you can easily get
 the graphs about the current temperature, humidity and pressure, just sending a message to the bot with the following 
 texts: 'temp', 'humi' or 'pres'.
 
@@ -58,7 +57,7 @@ for the software and hardware requirements.
 
 ### Hardware Requirements
 The project is tested with the following components:
-* **Raspberry Pi 4** (4 GB RAM version). However, the computational load is very low (about 3% of 
+* **Raspberry Pi 4** (4 GB RAM version). However, the computational load  of the *Home Monitoring Station* is very low (about 3% of 
 CPU usage and less than 300MB of RAM), then I suppose you can run the script even with an older version
 of the board.
 * **Adafruit 5''** (800x480) touch screen, PWM-able backlight. [Here](https://www.adafruit.com/product/2260)
@@ -70,17 +69,20 @@ experience some graphical errors.
 ### Software Requirements
 Run the program with **Python 3**. 
 Please, install all the packages required listed in the `requirements.txt` file.
-Remember to activate the **I2C** interface of the Raspberry board.
+Remember to [activate the **I2C** interface](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c) of the Raspberry board.
 
 ### Web-related Requirements
 Air quality and weather data are collected through web-based API.
-Then, you have to obtain the secret token from [OpenWeatherMap API](https://openweathermap.org/) (create a free
-account). To remote control the app, you need to activate a Telegram bot.
+Then, as you can imagine, you need an internet connection to collect these data.
+For the weather forecast, you have to obtain the secret token from [OpenWeatherMap API](https://openweathermap.org/) creating a free
+account. To remote control the app, you need to activate a [Telegram bot](https://core.telegram.org/bots).
+Arpae website does not need specific requirements.
 
-### Launch the script 
+### Launch the script (manually)
 Once cloned this repository, open a terminal in the project folder and type: `python3 main.py`.
 If you have python installed in a virtual environment, launch the script accordingly.
 
+### Launch the script (automatically at boot)
 You can use the file `launcher.sh` to automatically launch the script every time you turn on the *Raspberry Pi* board.
 There are several ways to do that.
 I have used this solution:
@@ -97,8 +99,10 @@ Exec=<absolute_path_to_your_script>/launcher.sh
 Note that I have added a sleep function (10 seconds) to wait the WiFi card turns on.
 
 ### Settings
+You can adapt this program to your needs.
+
 From the `settings` file you can change the following items:
-* **MODULES**: decide which module is activated or not.
+* **MODULES**: decide which module of the project is activated or not.
     * BME280: collection of temperature, humidity and pressure data from the BME280 sensor.
     * OPENWEATHER: get current weather and weather forecast data from the *OpenWeatherMap* API.
     * ARPAE: get air quality data from Arpae API.
@@ -126,17 +130,20 @@ From the `settings` file you can change the following items:
     
 
 ## Technical Details
-If you do not live in Italy, and specifically in Emilia Romagna, the Arpae service is useless.
-Despite this, this project can be an interesting starting point to develop your **own** Home Monitoring Station.
-Then, technical details are provided.
+If you do not live in Italy, and specifically in Emilia Romagna, the Arpae service is useless. You can deactivate it from the settings file.
+Despite this, this project can be an interesting starting point to develop your **own** *Home Monitoring Station*.
+Then, technical details are provided **(work in progress)**.
 
 ### Code Structure
 The entry point of the code is the file `main-py`.
-The GUI is developed using the *Qt Libraries*.
+The GUI is developed using the *Qt Libraries*. 
 
 ### Execution
-Several threads are started and run in parallel to collect data from the sensor, the websites and so on.
-Despite this, the CPU usage is low (only 3%) on the quad-core *Cortex-A72 (ARM v8) 64-bit SoC @1.5GHz* of the Raspberry Pi 4.
+The execution of the program is based in threads: in this way, each module can be adapted with its timing.
+Indeed, several threads are started and run in parallel to collect data from the sensor, the websites and so on.
+Threads are able to transfer data through the Qt signals and shared python lists.
+
+The CPU usage is low (only 3%) on the quad-core *Cortex-A72 (ARM v8) 64-bit SoC @1.5GHz* of the Raspberry Pi 4.
 Also the RAM usage is low, since less than 300MB are required. 
 
 ### Issues
