@@ -64,8 +64,11 @@ class ThreadWeatherForecast(QtCore.QThread):
         self.temp_cur = self.weather_data['list'][0]['main']['temp'] - 273.15
 
         weather_icon = self.weather_data['list'][0]['weather'][0]['icon']
-        icon = requests.get('http://openweathermap.org/img/w/{}.png'.format(weather_icon))
-        self.pixmap_cur_weather.loadFromData(icon._content)
+        try:
+            icon = requests.get('http://openweathermap.org/img/w/{}.png'.format(weather_icon))
+            self.pixmap_cur_weather.loadFromData(icon._content)
+        except requests.exceptions.RequestException as e:
+            print("ERROR: connection to Open Weather API not working. ", e)
 
         self.signal_weather.emit()
 
