@@ -1,0 +1,7 @@
+div.sensor_value h1 {
+    font-weight: bold;
+}
+
+div.sensor_value h1.warning {
+    color: red;
+}

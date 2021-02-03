@@ -1,0 +1,16 @@
+<h3 class="text-center">{{ title }}</h3>
+<div class="row sensor_value">
+<div class=col-sm>
+  <h1 class="text-center">{{ value }}</h1>
+</div>
+</div>
+{% if value_min or value_max %}
+<div class="row sensor_min_max">
+<div class="col-sm-6">
+    <h5 class="text-center">Min: {{ value_min }}</h5>
+</div>
+<div class="col-sm-6">
+    <h5 class="text-center">Max: {{ value_max }}</h5>
+</div>
+</div>
+{% endif %}

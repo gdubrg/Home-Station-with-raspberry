@@ -8,6 +8,7 @@ from date_time import ThreadDateTime
 from weather_api import ThreadWeatherForecast
 from arpae_api import ThreadArpae
 from graphs import ThreadGraphs
+from camera import ThreadCamera
 from telegram import SenderTelegram
 import yaml
 
@@ -63,6 +64,7 @@ class MainWindow(QMainWindow):
         self.graph_thread = ThreadGraphs(self, config, l)
         self.datetime_thread = ThreadDateTime(self)
         self.weather_thread = ThreadWeatherForecast(self, config)
+        self.camera_thread = ThreadCamera(self, config)
         self.arpae_thread = ThreadArpae(self, config)
 
         # signals
@@ -94,6 +96,12 @@ class MainWindow(QMainWindow):
             print("Module Arpae: ON")
         else:
             print("Module Arpae: OFF")
+
+        if config['MODULES']['CAMERA']:
+            self.camera_thread.start()
+            print("Module camera: ON")
+        else:
+            print("Module camera: OFF")
 
         if config['MODULES']['TELEGRAM']:
             self.sender = SenderTelegram(config)

@@ -1,0 +1,42 @@
+<h2 class="text-center">Air Quality</h2>
+<hr>
+
+<h3 class="text-center">Nitrogen dioxide (NO2)</h3>
+<div class="row sensor_value">
+<div class=col-sm>
+    <h1 class="text-center">{{ no2 }}</h1>
+</div>
+</div>
+<div class="row">
+<div class=col-sm>
+    {% include "snippets/badge.html" with value=no2 low=100 high=200 %}
+</div>
+</div>
+
+<br>
+
+<h3 class="text-center">Particulate Matter (PM2.5)</h3>
+<div class="row sensor_value">
+<div class=col-sm>
+    <h1 class="text-center">{{ pm25 }}</h1>
+</div>
+</div>
+<div class="row">
+<div class=col-sm>
+    {% include "snippets/badge.html" with value=pm25 low=20 high=60 %}
+</div>
+</div>
+
+<br>
+
+<h3 class="text-center">Particulate Matter (PM10)</h3>
+<div class="row sensor_value">
+<div class=col-sm>
+    <h1 class="text-center">{{ pm10 }}</h1>
+</div>
+</div>
+<div class="row">
+<div class=col-sm>
+    {% include "snippets/badge.html" with value=pm10 low=25 high=75 %}
+</div>
+</div>

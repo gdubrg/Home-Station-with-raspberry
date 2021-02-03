@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="row">
+  	<div class=col-sm>
+  		<h1 class="text-center"> Home Monitoring Station</h1>
+    </div>
+  </div>
+
+  <div class="row">
+  	<div class=col-sm>
+  		{# <h3 class="text-center">{{ today }}</h3> #}
+  		{# <h3 class="text-center" id="datetime">{% now "jS F Y" %} <span id="time">{% now "H:i" %}</span></h3> #}
+  		<h3 class="text-center" id="datetime"></h3>
+    </div>
+  </div>
+
+  <div class="row">&nbsp;</div>
+  <div class="row">
+
+    <div class="col-sm-4" id="sensors"></div>
+
+    <div class="col-sm-4" id="air_quality"></div>
+
+    <div class="col-sm-4" id="weather"></div>
+
+  </div>
+
+{% endblock %}
+
+{% block js %}
+{% csrf_token %}
+
+<script type="text/javascript">
+    let csrfcookie = function() {  // for django csrf protection
+        let cookieValue = null,
+        name = "csrftoken";
+        if (document.cookie && document.cookie !== "") {
+            let cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) == (name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    };
+
+    function update_data(data_type, timeout=30000){
+        $.ajax({
+             type: "POST",
+             url: '/visdata/dynamic/' + data_type,
+             data: {},
+             // required due to csrf security checks
+             beforeSend: function(request, settings) {
+                 if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                     request.setRequestHeader("X-CSRFToken", csrfcookie());
+                 }
+             },
+             success: function(data){
+                 // updating the html content of the div with id `data_type`
+                 $('#' + data_type).html(data);
+                 // update time (and date?)
+                 let currentDate = new Date();
+                 $('#datetime').html(currentDate.toLocaleString('default', {dateStyle: 'full', timeStyle: 'short'}))
+                 // call this again after timeout milliseconds
+                 setTimeout(update_data, timeout, data_type, timeout);
+             }
+        });
+    }
+
+    $(document).ready(function () {
+        update_data('sensors', 5000);
+        update_data('air_quality', 300000);
+        update_data('weather', 120000);
+    });
+</script>
+{% endblock %}

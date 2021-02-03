@@ -1,0 +1,7 @@
+<h2 class="text-center">Sensor</h2>
+<hr>
+{% include "snippets/sensor_block.html" with title="Temperature [°C]" value=temperature value_min=temperature_min value_max=temperature_max %}
+<br>
+{% include "snippets/sensor_block.html" with title="Humidity [%]" value=humidity value_min=humidity_min value_max=humidity_min %}
+<br>
+{% include "snippets/sensor_block.html" with title="Pressure [hPa]" value=pressure %}

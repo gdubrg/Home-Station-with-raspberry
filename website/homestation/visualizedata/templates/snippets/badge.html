@@ -1,0 +1,9 @@
+<h5 class="text-center">
+    {% if value < low %}
+      <span class="badge badge-pill badge-success">Good</span>
+    {% elif value >= low and value < high %}
+      <span class="badge badge-pill badge-warning">Bad</span>
+    {% elif value >= high %}
+      <span class="badge badge-pill badge-danger">Dangerous</span>
+    {% endif %}
+</h5>
