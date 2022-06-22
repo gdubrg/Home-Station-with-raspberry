@@ -59,7 +59,7 @@ mypy-extensions==0.4.1
 mysql-connector==2.2.9
 mysqlclient==1.4.6
 nudatus==0.0.4
-numpy==1.16.2
+numpy==1.22.0
 oauthlib==2.1.0
 olefile==0.46
 opencv-contrib-python==4.1.0.25
